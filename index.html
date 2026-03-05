@@ -5,31 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brand Character Exploration</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .archetype-card {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .binned-overlay {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(2px);
+        }
+        .favorite-placeholder {
+            border: 1px dashed #374151;
+            background: rgba(17, 24, 39, 0.2);
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-black text-white p-8 font-sans">
+<body class="min-h-screen p-8 selection:bg-yellow-500/30">
 
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-bold text-center mb-10 tracking-wide text-white">
-            Brand Character Exploration
+    <div class="max-w-5xl mx-auto">
+        <h1 class="text-5xl md:text-7xl font-extrabold text-center mb-14 tracking-tighter">
+            Pick your brand character
         </h1>
 
-        <div class="mb-16 border-2 border-yellow-400 bg-gray-900 rounded-2xl p-6 shadow-2xl">
+        <div id="favorites-section" class="mb-16 border-2 border-yellow-400 bg-gray-900 rounded-2xl p-6 shadow-2xl">
             <h2 class="text-2xl font-semibold mb-6 text-yellow-400">Favourites</h2>
-            
-            <p id="no-fav-text" class="text-gray-400 italic block">
-                No favorites selected yet. Click the star on an image to move it here.
-            </p>
-            
-            <div id="favorites-container" class="flex flex-wrap gap-6">
+            <div id="favorites-grid" class="flex flex-wrap gap-8 justify-start">
                 </div>
+            <p id="no-favorites-text" class="text-gray-400 italic">No favorites selected yet. Click the star on an image to move it here.</p>
         </div>
 
-        <div id="main-grid" class="grid grid-cols-3 gap-6 md:gap-10">
+        <div id="main-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
             </div>
     </div>
 
     <script>
-        // 1. Setup the URLs
         const githubUrls = [
             "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_22b24s22b24s22b2.png",
             "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_48mfr48mfr48mfr4.png",
@@ -45,87 +60,102 @@
             "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_t6lzzut6lzzut6lz.png"
         ];
 
-        // 2. Initialize the State
-        let images = githubUrls.map((url, index) => ({
-            id: index + 1,
+        const archetypes = [
+            { name: "The Hero", desc: "Courageous, disciplined, and strong. They want to prove their worth." },
+            { name: "The Creator", desc: "Imaginative and inventive. They build something of lasting value." },
+            { name: "The Sage", desc: "Wise and analytical. They value truth and knowledge." },
+            { name: "The Magician", desc: "Visionary and transformative. They make the impossible happen." },
+            { name: "The Lover", desc: "Empathetic and aesthetic. They focus on beauty and relationships." },
+            { name: "The Outlaw", desc: "Disruptive and wild. They want to break the rules." },
+            { name: "The Ruler", desc: "Authoritative and stable. They provide security and excellence." },
+            { name: "The Jester", desc: "Playful and irreverent. They use humor to break barriers." },
+            { name: "The Everyman", desc: "Relatable and down-to-earth. They value common sense." },
+            { name: "The Innocent", desc: "Optimistic and humble. They focus on simplicity." },
+            { name: "The Explorer", desc: "Independent and adventurous. They crave freedom." },
+            { name: "The Sage", desc: "Philosophical and wise. They value knowledge above all." }
+        ];
+
+        let state = githubUrls.map((url, i) => ({
+            id: i,
             url: url,
+            name: archetypes[i].name,
+            desc: archetypes[i].desc,
             isFavorite: false,
             isBinned: false
         }));
 
-        // SVGs for the icons
-        const starIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 group-hover:scale-110 transition-transform"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
-        const trashIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:scale-110 transition-transform"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
-        const xIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+        function render() {
+            const mainGrid = document.getElementById('main-grid');
+            const favoritesGrid = document.getElementById('favorites-grid');
+            const noFavsText = document.getElementById('no-favorites-text');
 
-        // 3. Action Functions
+            mainGrid.innerHTML = '';
+            favoritesGrid.innerHTML = '';
+
+            const favoriteItems = state.filter(img => img.isFavorite);
+            noFavsText.style.display = favoriteItems.length === 0 ? 'block' : 'none';
+
+            state.forEach(img => {
+                if (img.isFavorite) {
+                    // Render in Favorites section
+                    const favEl = document.createElement('div');
+                    favEl.className = "flex flex-col items-center w-28 sm:w-36";
+                    favEl.innerHTML = `
+                        <div class="relative w-full aspect-[9/10] rounded-xl overflow-hidden shadow-[0_0_25px_rgba(255,255,255,0.3)] border border-white/20">
+                            <img src="${img.url}" class="object-cover object-top w-full h-full">
+                            <button onclick="toggleFavorite(${img.id})" class="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <p class="mt-3 text-[10px] font-bold text-yellow-400 uppercase tracking-widest text-center">${img.name}</p>
+                    `;
+                    favoritesGrid.appendChild(favEl);
+
+                    // Render Placeholder in main grid
+                    const placeholder = document.createElement('div');
+                    placeholder.className = "favorite-placeholder aspect-[9/10] w-full rounded-2xl flex items-center justify-center";
+                    placeholder.innerHTML = `<i data-lucide="star" class="text-gray-800 w-8 h-8"></i>`;
+                    mainGrid.appendChild(placeholder);
+                } else {
+                    // Render regular card
+                    const card = document.createElement('div');
+                    card.className = "flex flex-col h-full group";
+                    card.innerHTML = `
+                        <div class="relative aspect-[9/10] rounded-2xl overflow-hidden bg-gray-800 shadow-xl mb-4">
+                            <img src="${img.url}" class="object-cover object-top w-full h-full transition-transform duration-500 group-hover:scale-105">
+                            ${img.isBinned ? '<div class="absolute inset-0 binned-overlay z-10 flex items-center justify-center"><span class="text-gray-500 text-xs font-medium uppercase tracking-widest">Excluded</span></div>' : ''}
+                        </div>
+                        <div class="px-1 mb-4 flex-grow">
+                            <h3 class="text-xl font-bold text-white mb-1">${img.name}</h3>
+                            <p class="text-sm text-gray-400 leading-relaxed">${img.desc}</p>
+                        </div>
+                        <div class="flex justify-center gap-6 mt-auto pb-2">
+                            <button onclick="toggleFavorite(${img.id})" class="p-3 bg-gray-800 border border-gray-700 rounded-full hover:border-yellow-400/50">
+                                <i data-lucide="star" class="text-yellow-400 w-6 h-6"></i>
+                            </button>
+                            <button onclick="toggleBin(${img.id})" class="p-3 rounded-full border ${img.isBinned ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-gray-800 border-gray-700 text-gray-500'}">
+                                <i data-lucide="trash-2" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                    `;
+                    mainGrid.appendChild(card);
+                }
+            });
+            lucide.createIcons();
+        }
+
         window.toggleFavorite = (id) => {
-            images = images.map(img => 
-                img.id === id ? { ...img, isFavorite: true, isBinned: false } : img
-            );
-            renderUI();
-        };
-
-        window.removeFromFavorites = (id) => {
-            images = images.map(img => 
-                img.id === id ? { ...img, isFavorite: false } : img
-            );
-            renderUI();
+            state[id].isFavorite = !state[id].isFavorite;
+            state[id].isBinned = false;
+            render();
         };
 
         window.toggleBin = (id) => {
-            images = images.map(img => 
-                img.id === id ? { ...img, isBinned: !img.isBinned } : img
-            );
-            renderUI();
+            state[id].isBinned = !state[id].isBinned;
+            render();
         };
 
-        // 4. Render Function (Updates the screen)
-        function renderUI() {
-            const favoriteImages = images.filter(img => img.isFavorite);
-            const gridImages = images.filter(img => !img.isFavorite);
-
-            const favContainer = document.getElementById('favorites-container');
-            const noFavText = document.getElementById('no-fav-text');
-            const mainGrid = document.getElementById('main-grid');
-
-            // Handle Favorites
-            if (favoriteImages.length === 0) {
-                noFavText.style.display = 'block';
-                favContainer.innerHTML = '';
-            } else {
-                noFavText.style.display = 'none';
-                favContainer.innerHTML = favoriteImages.map(img => `
-                    <div class="relative w-28 sm:w-36 aspect-[2/3] rounded-xl overflow-hidden shadow-[0_0_35px_rgba(255,255,255,0.5)] border border-white/20 transition-all duration-300 transform hover:scale-105">
-                        <img src="${img.url}" alt="Favorite ${img.id}" class="object-cover w-full h-full" />
-                        <button onclick="removeFromFavorites(${img.id})" class="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/90 rounded-full text-white backdrop-blur-sm transition-colors z-20" title="Remove from Favourites">
-                            ${xIcon}
-                        </button>
-                    </div>
-                `).join('');
-            }
-
-            // Handle Main Grid
-            mainGrid.innerHTML = gridImages.map(img => `
-                <div class="flex flex-col gap-4">
-                    <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800 shadow-lg">
-                        <img src="${img.url}" alt="Character ${img.id}" class="object-cover w-full h-full" />
-                        ${img.isBinned ? `<div class="absolute inset-0 bg-gray-900/80 z-10 transition-opacity duration-300 pointer-events-none flex items-center justify-center"></div>` : ''}
-                    </div>
-                    <div class="flex justify-center gap-6">
-                        <button onclick="toggleFavorite(${img.id})" class="p-3.5 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors group shadow-md" title="Move to Favourites">
-                            ${starIcon}
-                        </button>
-                        <button onclick="toggleBin(${img.id})" class="p-3.5 rounded-full transition-colors group shadow-md ${img.isBinned ? 'bg-red-900/50 hover:bg-red-900/80' : 'bg-gray-800 hover:bg-gray-700'}" title="${img.isBinned ? 'Restore Image' : 'Bin Image'}">
-                            ${trashIcon}
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Run render once when the page loads
-        renderUI();
+        render();
     </script>
 </body>
 </html>
