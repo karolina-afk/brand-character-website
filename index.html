@@ -1,0 +1,154 @@
+"import React, { useState } from 'react';
+import { Star, Trash2, X } from 'lucide-react';
+
+export default function App() {
+  // --- CONFIGURATION ---
+  const githubUrls = [
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_22b24s22b24s22b2.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_48mfr48mfr48mfr4.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_7rm1my7rm1my7rm1.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_8t9fyd8t9fyd8t9f.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_bg3kosbg3kosbg3k.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_fez2jfez2jfez2jf.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_ffaz02ffaz02ffaz.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_skzqspskzqspskzq.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_775nlq775nlq775n.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_d7j2i7d7j2i7d7j2.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_g93lajg93lajg93l.png"",
+    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_t6lzzut6lzzut6lz.png""
+  ];
+
+  // Generate the 12 images from your provided URLs
+  const initialImages = githubUrls.map((url, index) => ({
+    id: index + 1,
+    url: url,
+    isFavorite: false,
+    isBinned: false,
+  }));
+
+  const [images, setImages] = useState(initialImages);
+
+  // --- ACTIONS ---
+  const toggleFavorite = (id) => {
+    setImages((prevImages) =>
+      prevImages.map((img) =>
+        img.id === id
+          ? { ...img, isFavorite: true, isBinned: false } // Moving to favorites un-bins it
+          : img
+      )
+    );
+  };
+
+  const removeFromFavorites = (id) => {
+    setImages((prevImages) =>
+      prevImages.map((img) =>
+        img.id === id ? { ...img, isFavorite: false } : img
+      )
+    );
+  };
+
+  const toggleBin = (id) => {
+    setImages((prevImages) =>
+      prevImages.map((img) =>
+        img.id === id ? { ...img, isBinned: !img.isBinned } : img
+      )
+    );
+  };
+
+  // --- FILTERED DATA ---
+  const favoriteImages = images.filter((img) => img.isFavorite);
+  const gridImages = images.filter((img) => !img.isFavorite);
+
+  return (
+    <div className=""min-h-screen bg-black text-white p-8 font-sans"">
+      <div className=""max-w-4xl mx-auto"">
+        
+        {/* Title */}
+        <h1 className=""text-4xl md:text-5xl font-bold text-center mb-10 tracking-wide text-white"">
+          Brand Character Exploration
+        </h1>
+
+        {/* Favourites Section */}
+        <div className=""mb-16 border-2 border-yellow-400 bg-gray-900 rounded-2xl p-6 shadow-2xl"">
+          <h2 className=""text-2xl font-semibold mb-6 text-yellow-400"">Favourites</h2>
+          
+          {favoriteImages.length === 0 ? (
+            <p className=""text-gray-400 italic"">No favorites selected yet. Click the star on an image to move it here.</p>
+          ) : (
+            <div className=""flex flex-wrap gap-6"">
+              {favoriteImages.map((img) => (
+                <div 
+                  key={img.id} 
+                  className=""relative w-28 sm:w-36 aspect-[2/3] rounded-xl overflow-hidden shadow-[0_0_35px_rgba(255,255,255,0.5)] border border-white/20 transition-all duration-300 transform hover:scale-105""
+                >
+                  <img
+                    src={img.url}
+                    alt={`Favorite ${img.id}`}
+                    className=""object-cover w-full h-full""
+                  />
+                  {/* Cross Icon to remove from favorites */}
+                  <button
+                    onClick={() => removeFromFavorites(img.id)}
+                    className=""absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/90 rounded-full text-white backdrop-blur-sm transition-colors z-20""
+                    title=""Remove from Favourites""
+                  >
+                    <X size={18} strokeWidth={2.5} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Main Image Grid (3 columns) */}
+        <div className=""grid grid-cols-3 gap-6 md:gap-10"">
+          {gridImages.map((img) => (
+            <div key={img.id} className=""flex flex-col gap-4"">
+              
+              {/* Image Container */}
+              <div className=""relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800 shadow-lg"">
+                <img
+                  src={img.url}
+                  alt={`Character ${img.id}`}
+                  className=""object-cover w-full h-full""
+                />
+                
+                {/* Gray Transparent Overlay for Binned Images */}
+                {img.isBinned && (
+                  <div className=""absolute inset-0 bg-gray-900/80 z-10 transition-opacity duration-300 pointer-events-none flex items-center justify-center"">
+                    {/* Optional: You can put a large bin icon or text here if desired */}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className=""flex justify-center gap-6"">
+                {/* Star Button */}
+                <button
+                  onClick={() => toggleFavorite(img.id)}
+                  className=""p-3.5 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors group shadow-md""
+                  title=""Move to Favourites""
+                >
+                  <Star className=""text-yellow-400 group-hover:scale-110 transition-transform"" size={24} />
+                </button>
+                
+                {/* Bin Button */}
+                <button
+                  onClick={() => toggleBin(img.id)}
+                  className={`p-3.5 rounded-full transition-colors group shadow-md ${
+                    img.isBinned ? 'bg-red-900/50 hover:bg-red-900/80' : 'bg-gray-800 hover:bg-gray-700'
+                  }`}
+                  title={img.isBinned ? ""Restore Image"" : ""Bin Image""}
+                >
+                  <Trash2 className=""text-gray-400 group-hover:scale-110 transition-transform"" size={24} />
+                </button>
+              </div>
+
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+}"
