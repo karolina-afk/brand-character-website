@@ -1,154 +1,131 @@
-"import React, { useState } from 'react';
-import { Star, Trash2, X } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Character Exploration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-black text-white p-8 font-sans">
 
-export default function App() {
-  // --- CONFIGURATION ---
-  const githubUrls = [
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_22b24s22b24s22b2.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_48mfr48mfr48mfr4.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_7rm1my7rm1my7rm1.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_8t9fyd8t9fyd8t9f.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_bg3kosbg3kosbg3k.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_fez2jfez2jfez2jf.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_ffaz02ffaz02ffaz.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_skzqspskzqspskzq.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_775nlq775nlq775n.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_d7j2i7d7j2i7d7j2.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_g93lajg93lajg93l.png"",
-    ""https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_t6lzzut6lzzut6lz.png""
-  ];
-
-  // Generate the 12 images from your provided URLs
-  const initialImages = githubUrls.map((url, index) => ({
-    id: index + 1,
-    url: url,
-    isFavorite: false,
-    isBinned: false,
-  }));
-
-  const [images, setImages] = useState(initialImages);
-
-  // --- ACTIONS ---
-  const toggleFavorite = (id) => {
-    setImages((prevImages) =>
-      prevImages.map((img) =>
-        img.id === id
-          ? { ...img, isFavorite: true, isBinned: false } // Moving to favorites un-bins it
-          : img
-      )
-    );
-  };
-
-  const removeFromFavorites = (id) => {
-    setImages((prevImages) =>
-      prevImages.map((img) =>
-        img.id === id ? { ...img, isFavorite: false } : img
-      )
-    );
-  };
-
-  const toggleBin = (id) => {
-    setImages((prevImages) =>
-      prevImages.map((img) =>
-        img.id === id ? { ...img, isBinned: !img.isBinned } : img
-      )
-    );
-  };
-
-  // --- FILTERED DATA ---
-  const favoriteImages = images.filter((img) => img.isFavorite);
-  const gridImages = images.filter((img) => !img.isFavorite);
-
-  return (
-    <div className=""min-h-screen bg-black text-white p-8 font-sans"">
-      <div className=""max-w-4xl mx-auto"">
-        
-        {/* Title */}
-        <h1 className=""text-4xl md:text-5xl font-bold text-center mb-10 tracking-wide text-white"">
-          Brand Character Exploration
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-bold text-center mb-10 tracking-wide text-white">
+            Brand Character Exploration
         </h1>
 
-        {/* Favourites Section */}
-        <div className=""mb-16 border-2 border-yellow-400 bg-gray-900 rounded-2xl p-6 shadow-2xl"">
-          <h2 className=""text-2xl font-semibold mb-6 text-yellow-400"">Favourites</h2>
-          
-          {favoriteImages.length === 0 ? (
-            <p className=""text-gray-400 italic"">No favorites selected yet. Click the star on an image to move it here.</p>
-          ) : (
-            <div className=""flex flex-wrap gap-6"">
-              {favoriteImages.map((img) => (
-                <div 
-                  key={img.id} 
-                  className=""relative w-28 sm:w-36 aspect-[2/3] rounded-xl overflow-hidden shadow-[0_0_35px_rgba(255,255,255,0.5)] border border-white/20 transition-all duration-300 transform hover:scale-105""
-                >
-                  <img
-                    src={img.url}
-                    alt={`Favorite ${img.id}`}
-                    className=""object-cover w-full h-full""
-                  />
-                  {/* Cross Icon to remove from favorites */}
-                  <button
-                    onClick={() => removeFromFavorites(img.id)}
-                    className=""absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/90 rounded-full text-white backdrop-blur-sm transition-colors z-20""
-                    title=""Remove from Favourites""
-                  >
-                    <X size={18} strokeWidth={2.5} />
-                  </button>
+        <div class="mb-16 border-2 border-yellow-400 bg-gray-900 rounded-2xl p-6 shadow-2xl">
+            <h2 class="text-2xl font-semibold mb-6 text-yellow-400">Favourites</h2>
+            
+            <p id="no-fav-text" class="text-gray-400 italic block">
+                No favorites selected yet. Click the star on an image to move it here.
+            </p>
+            
+            <div id="favorites-container" class="flex flex-wrap gap-6">
                 </div>
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Main Image Grid (3 columns) */}
-        <div className=""grid grid-cols-3 gap-6 md:gap-10"">
-          {gridImages.map((img) => (
-            <div key={img.id} className=""flex flex-col gap-4"">
-              
-              {/* Image Container */}
-              <div className=""relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800 shadow-lg"">
-                <img
-                  src={img.url}
-                  alt={`Character ${img.id}`}
-                  className=""object-cover w-full h-full""
-                />
-                
-                {/* Gray Transparent Overlay for Binned Images */}
-                {img.isBinned && (
-                  <div className=""absolute inset-0 bg-gray-900/80 z-10 transition-opacity duration-300 pointer-events-none flex items-center justify-center"">
-                    {/* Optional: You can put a large bin icon or text here if desired */}
-                  </div>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className=""flex justify-center gap-6"">
-                {/* Star Button */}
-                <button
-                  onClick={() => toggleFavorite(img.id)}
-                  className=""p-3.5 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors group shadow-md""
-                  title=""Move to Favourites""
-                >
-                  <Star className=""text-yellow-400 group-hover:scale-110 transition-transform"" size={24} />
-                </button>
-                
-                {/* Bin Button */}
-                <button
-                  onClick={() => toggleBin(img.id)}
-                  className={`p-3.5 rounded-full transition-colors group shadow-md ${
-                    img.isBinned ? 'bg-red-900/50 hover:bg-red-900/80' : 'bg-gray-800 hover:bg-gray-700'
-                  }`}
-                  title={img.isBinned ? ""Restore Image"" : ""Bin Image""}
-                >
-                  <Trash2 className=""text-gray-400 group-hover:scale-110 transition-transform"" size={24} />
-                </button>
-              </div>
-
+        <div id="main-grid" class="grid grid-cols-3 gap-6 md:gap-10">
             </div>
-          ))}
-        </div>
-
-      </div>
     </div>
-  );
-}"
+
+    <script>
+        // 1. Setup the URLs
+        const githubUrls = [
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_22b24s22b24s22b2.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_48mfr48mfr48mfr4.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_7rm1my7rm1my7rm1.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_8t9fyd8t9fyd8t9f.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_bg3kosbg3kosbg3k.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_fez2jfez2jfez2jf.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_ffaz02ffaz02ffaz.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_skzqspskzqspskzq.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_775nlq775nlq775n.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_d7j2i7d7j2i7d7j2.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_g93lajg93lajg93l.png",
+            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_t6lzzut6lzzut6lz.png"
+        ];
+
+        // 2. Initialize the State
+        let images = githubUrls.map((url, index) => ({
+            id: index + 1,
+            url: url,
+            isFavorite: false,
+            isBinned: false
+        }));
+
+        // SVGs for the icons
+        const starIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 group-hover:scale-110 transition-transform"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+        const trashIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 group-hover:scale-110 transition-transform"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+        const xIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+        // 3. Action Functions
+        window.toggleFavorite = (id) => {
+            images = images.map(img => 
+                img.id === id ? { ...img, isFavorite: true, isBinned: false } : img
+            );
+            renderUI();
+        };
+
+        window.removeFromFavorites = (id) => {
+            images = images.map(img => 
+                img.id === id ? { ...img, isFavorite: false } : img
+            );
+            renderUI();
+        };
+
+        window.toggleBin = (id) => {
+            images = images.map(img => 
+                img.id === id ? { ...img, isBinned: !img.isBinned } : img
+            );
+            renderUI();
+        };
+
+        // 4. Render Function (Updates the screen)
+        function renderUI() {
+            const favoriteImages = images.filter(img => img.isFavorite);
+            const gridImages = images.filter(img => !img.isFavorite);
+
+            const favContainer = document.getElementById('favorites-container');
+            const noFavText = document.getElementById('no-fav-text');
+            const mainGrid = document.getElementById('main-grid');
+
+            // Handle Favorites
+            if (favoriteImages.length === 0) {
+                noFavText.style.display = 'block';
+                favContainer.innerHTML = '';
+            } else {
+                noFavText.style.display = 'none';
+                favContainer.innerHTML = favoriteImages.map(img => `
+                    <div class="relative w-28 sm:w-36 aspect-[2/3] rounded-xl overflow-hidden shadow-[0_0_35px_rgba(255,255,255,0.5)] border border-white/20 transition-all duration-300 transform hover:scale-105">
+                        <img src="${img.url}" alt="Favorite ${img.id}" class="object-cover w-full h-full" />
+                        <button onclick="removeFromFavorites(${img.id})" class="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/90 rounded-full text-white backdrop-blur-sm transition-colors z-20" title="Remove from Favourites">
+                            ${xIcon}
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            // Handle Main Grid
+            mainGrid.innerHTML = gridImages.map(img => `
+                <div class="flex flex-col gap-4">
+                    <div class="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-800 shadow-lg">
+                        <img src="${img.url}" alt="Character ${img.id}" class="object-cover w-full h-full" />
+                        ${img.isBinned ? `<div class="absolute inset-0 bg-gray-900/80 z-10 transition-opacity duration-300 pointer-events-none flex items-center justify-center"></div>` : ''}
+                    </div>
+                    <div class="flex justify-center gap-6">
+                        <button onclick="toggleFavorite(${img.id})" class="p-3.5 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors group shadow-md" title="Move to Favourites">
+                            ${starIcon}
+                        </button>
+                        <button onclick="toggleBin(${img.id})" class="p-3.5 rounded-full transition-colors group shadow-md ${img.isBinned ? 'bg-red-900/50 hover:bg-red-900/80' : 'bg-gray-800 hover:bg-gray-700'}" title="${img.isBinned ? 'Restore Image' : 'Bin Image'}">
+                            ${trashIcon}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Run render once when the page loads
+        renderUI();
+    </script>
+</body>
+</html>
