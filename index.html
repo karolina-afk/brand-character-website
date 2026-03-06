@@ -4,158 +4,377 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brand Character Exploration</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        :root {
+            --bg-black: #000000;
+            --card-bg: #111827; /* gray-900 */
+            --btn-bg: #1f2937;  /* gray-800 */
+            --text-white: #ffffff;
+            --text-gray: #9ca3af;
+            --yellow: #facc15;
+            --red: #7f1d1d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background-color: black;
-            color: white;
+            background-color: var(--bg-black);
+            color: var(--text-white);
             font-family: 'Inter', sans-serif;
+            padding: 2rem 1rem;
+            line-height: 1.5;
         }
-        .archetype-card {
-            transition: transform 0.3s ease, opacity 0.3s ease;
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
         }
-        .binned-overlay {
-            background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(2px);
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 3.5rem;
+            letter-spacing: -0.05em;
         }
-        .favorite-placeholder {
+
+        /* Favourites Section */
+        .favourites-section {
+            background-color: var(--card-bg);
+            border: 2px solid var(--yellow);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 4rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            min-height: 150px;
+        }
+
+        .favourites-section h2 {
+            color: var(--yellow);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #favorites-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .empty-msg {
+            color: var(--text-gray);
+            font-style: italic;
+        }
+
+        .fav-card {
+            width: 140px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .fav-img-container {
+            position: relative;
+            aspect-ratio: 9/10;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .fav-img-container:hover {
+            transform: scale(1.05);
+        }
+
+        .fav-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        .remove-fav {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+            padding: 4px;
+            border-radius: 50%;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fav-name {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--yellow);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 3rem;
+        }
+
+        .character-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .placeholder {
+            aspect-ratio: 9/10;
             border: 1px dashed #374151;
             background: rgba(17, 24, 39, 0.2);
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2937;
+        }
+
+        .img-wrapper {
+            position: relative;
+            aspect-ratio: 9/10;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            background: #1f2937;
+            margin-bottom: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            transition: transform 0.5s ease;
+        }
+
+        .character-card:hover .img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .binned-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 7, 18, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(2px);
+        }
+
+        .binned-overlay span {
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .character-info h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .character-info p {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+            min-height: 3rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .btn {
+            background: var(--btn-bg);
+            border: 1px solid #374151;
+            border-radius: 50%;
+            padding: 0.75rem;
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-star:hover {
+            border-color: rgba(250, 204, 21, 0.5);
+            background: rgba(250, 204, 21, 0.1);
+        }
+
+        .btn-star i { color: var(--yellow); }
+
+        .is-binned .binned-overlay { display: flex; }
+        .is-binned .btn-bin { 
+            background: rgba(127, 29, 29, 0.2); 
+            border-color: rgba(239, 68, 68, 0.5); 
+            color: #ef4444; 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .fav-card { width: 100px; }
         }
     </style>
 </head>
-<body class="min-h-screen p-8 selection:bg-yellow-500/30">
+<body>
 
-    <div class="max-w-5xl mx-auto">
-        <h1 class="text-5xl md:text-7xl font-extrabold text-center mb-14 tracking-tighter">
-            Pick your brand character
-        </h1>
+<div class="container">
+    <h1>Pick your brand character</h1>
 
-        <div id="favorites-section" class="mb-16 border-2 border-yellow-400 bg-gray-900 rounded-2xl p-6 shadow-2xl">
-            <h2 class="text-2xl font-semibold mb-6 text-yellow-400">Favourites</h2>
-            <div id="favorites-grid" class="flex flex-wrap gap-8 justify-start">
-                </div>
-            <p id="no-favorites-text" class="text-gray-400 italic">No favorites selected yet. Click the star on an image to move it here.</p>
+    <section class="favourites-section">
+        <h2>Favourites</h2>
+        <div id="favorites-grid">
+            <p class="empty-msg">No favorites selected yet. Click the star on an image to move it here.</p>
         </div>
+    </section>
 
-        <div id="main-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
-            </div>
-    </div>
+    <main class="main-grid" id="main-grid">
+        </main>
+</div>
 
-    <script>
-        const githubUrls = [
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_22b24s22b24s22b2.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_48mfr48mfr48mfr4.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_7rm1my7rm1my7rm1.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_8t9fyd8t9fyd8t9f.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_bg3kosbg3kosbg3k.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_fez2jfez2jfez2jf.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_ffaz02ffaz02ffaz.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_skzqspskzqspskzq.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_775nlq775nlq775n.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_d7j2i7d7j2i7d7j2.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_g93lajg93lajg93l.png",
-            "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_t6lzzut6lzzut6lz.png"
-        ];
+<script>
+    const githubUrls = [
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_22b24s22b24s22b2.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_48mfr48mfr48mfr4.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_7rm1my7rm1my7rm1.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_8t9fyd8t9fyd8t9f.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_bg3kosbg3kosbg3k.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_fez2jfez2jfez2jf.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_ffaz02ffaz02ffaz.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets/main/Gemini_Generated_Image_skzqspskzqspskzq.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_775nlq775nlq775n.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_d7j2i7d7j2i7d7j2.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_g93lajg93lajg93l.png",
+        "https://raw.githubusercontent.com/karolina-afk/branding-workshop-assets-v2/main/Gemini_Generated_Image_t6lzzut6lzzut6lz.png"
+    ];
 
-        const archetypes = [
-            { name: "The Hero", desc: "Courageous, disciplined, and strong. They want to prove their worth." },
-            { name: "The Creator", desc: "Imaginative and inventive. They build something of lasting value." },
-            { name: "The Sage", desc: "Wise and analytical. They value truth and knowledge." },
-            { name: "The Magician", desc: "Visionary and transformative. They make the impossible happen." },
-            { name: "The Lover", desc: "Empathetic and aesthetic. They focus on beauty and relationships." },
-            { name: "The Outlaw", desc: "Disruptive and wild. They want to break the rules." },
-            { name: "The Ruler", desc: "Authoritative and stable. They provide security and excellence." },
-            { name: "The Jester", desc: "Playful and irreverent. They use humor to break barriers." },
-            { name: "The Everyman", desc: "Relatable and down-to-earth. They value common sense." },
-            { name: "The Innocent", desc: "Optimistic and humble. They focus on simplicity." },
-            { name: "The Explorer", desc: "Independent and adventurous. They crave freedom." },
-            { name: "The Sage", desc: "Philosophical and wise. They value knowledge above all." }
-        ];
+    const archetypes = [
+        { name: "The Hero", desc: "Courageous, disciplined, and strong. They want to prove their worth through difficult actions." },
+        { name: "The Creator", desc: "Imaginative, non-conforming, and inventive. They are driven to build something of lasting value." },
+        { name: "The Caregiver", desc: "Compassionate, generous, and nurturing. Their goal is to protect and help others." },
+        { name: "The Magician", desc: "Visionary, charismatic, and transformative. They make the impossible happen." },
+        { name: "The Lover", desc: "Sensual, empathetic, and aesthetic. They focus on building relationships and creating beauty." },
+        { name: "The Outlaw", desc: "Disruptive, wild, and liberating. They want to break the rules and overturn the status quo." },
+        { name: "The Ruler", desc: "Authoritative, organized, and stable. They provide a sense of security and excellence." },
+        { name: "The Jester", desc: "Playful, irreverent, and funny. They live in the moment and use humor to break barriers." },
+        { name: "The Everyman", desc: "Relatable, friendly, and down-to-earth. They value hard work and common sense." },
+        { name: "The Innocent", desc: "Optimistic, honest, and humble. They focus on simplicity and happiness." },
+        { name: "The Explorer", desc: "Independent, adventurous, and brave. They crave freedom and self-discovery." },
+        { name: "The Sage", desc: "Philosophical, wise, and analytical. They value truth and knowledge above all else." }
+    ];
 
-        let state = githubUrls.map((url, i) => ({
-            id: i,
-            url: url,
-            name: archetypes[i].name,
-            desc: archetypes[i].desc,
-            isFavorite: false,
-            isBinned: false
-        }));
+    // State management
+    let state = githubUrls.map((url, i) => ({
+        id: i,
+        url: url,
+        name: archetypes[i].name,
+        desc: archetypes[i].desc,
+        isFavorite: false,
+        isBinned: false
+    }));
 
-        function render() {
-            const mainGrid = document.getElementById('main-grid');
-            const favoritesGrid = document.getElementById('favorites-grid');
-            const noFavsText = document.getElementById('no-favorites-text');
-
-            mainGrid.innerHTML = '';
-            favoritesGrid.innerHTML = '';
-
-            const favoriteItems = state.filter(img => img.isFavorite);
-            noFavsText.style.display = favoriteItems.length === 0 ? 'block' : 'none';
-
-            state.forEach(img => {
-                if (img.isFavorite) {
-                    // Render in Favorites section
-                    const favEl = document.createElement('div');
-                    favEl.className = "flex flex-col items-center w-28 sm:w-36";
-                    favEl.innerHTML = `
-                        <div class="relative w-full aspect-[9/10] rounded-xl overflow-hidden shadow-[0_0_25px_rgba(255,255,255,0.3)] border border-white/20">
-                            <img src="${img.url}" class="object-cover object-top w-full h-full">
-                            <button onclick="toggleFavorite(${img.id})" class="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white">
-                                <i data-lucide="x" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                        <p class="mt-3 text-[10px] font-bold text-yellow-400 uppercase tracking-widest text-center">${img.name}</p>
-                    `;
-                    favoritesGrid.appendChild(favEl);
-
-                    // Render Placeholder in main grid
-                    const placeholder = document.createElement('div');
-                    placeholder.className = "favorite-placeholder aspect-[9/10] w-full rounded-2xl flex items-center justify-center";
-                    placeholder.innerHTML = `<i data-lucide="star" class="text-gray-800 w-8 h-8"></i>`;
-                    mainGrid.appendChild(placeholder);
-                } else {
-                    // Render regular card
-                    const card = document.createElement('div');
-                    card.className = "flex flex-col h-full group";
-                    card.innerHTML = `
-                        <div class="relative aspect-[9/10] rounded-2xl overflow-hidden bg-gray-800 shadow-xl mb-4">
-                            <img src="${img.url}" class="object-cover object-top w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            ${img.isBinned ? '<div class="absolute inset-0 binned-overlay z-10 flex items-center justify-center"><span class="text-gray-500 text-xs font-medium uppercase tracking-widest">Excluded</span></div>' : ''}
-                        </div>
-                        <div class="px-1 mb-4 flex-grow">
-                            <h3 class="text-xl font-bold text-white mb-1">${img.name}</h3>
-                            <p class="text-sm text-gray-400 leading-relaxed">${img.desc}</p>
-                        </div>
-                        <div class="flex justify-center gap-6 mt-auto pb-2">
-                            <button onclick="toggleFavorite(${img.id})" class="p-3 bg-gray-800 border border-gray-700 rounded-full hover:border-yellow-400/50">
-                                <i data-lucide="star" class="text-yellow-400 w-6 h-6"></i>
-                            </button>
-                            <button onclick="toggleBin(${img.id})" class="p-3 rounded-full border ${img.isBinned ? 'bg-red-950/20 border-red-500 text-red-500' : 'bg-gray-800 border-gray-700 text-gray-500'}">
-                                <i data-lucide="trash-2" class="w-6 h-6"></i>
-                            </button>
-                        </div>
-                    `;
-                    mainGrid.appendChild(card);
-                }
-            });
-            lucide.createIcons();
+    function render() {
+        const mainGrid = document.getElementById('main-grid');
+        const favGrid = document.getElementById('favorites-grid');
+        
+        // Render Favorites
+        const favs = state.filter(img => img.isFavorite);
+        if (favs.length === 0) {
+            favGrid.innerHTML = '<p class="empty-msg">No favorites selected yet. Click the star on an image to move it here.</p>';
+        } else {
+            favGrid.innerHTML = favs.map(img => `
+                <div class="fav-card">
+                    <div class="fav-img-container">
+                        <img src="${img.url}" alt="${img.name}">
+                        <button class="remove-fav" onclick="toggleFavorite(${img.id})">
+                            <i data-lucide="x" style="width:16px; height:16px;"></i>
+                        </button>
+                    </div>
+                    <div class="fav-name">${img.name}</div>
+                </div>
+            `).join('');
         }
 
-        window.toggleFavorite = (id) => {
-            state[id].isFavorite = !state[id].isFavorite;
-            state[id].isBinned = false;
-            render();
-        };
+        // Render Main Grid
+        mainGrid.innerHTML = state.map(img => {
+            if (img.isFavorite) {
+                return `<div class="placeholder"><i data-lucide="star" style="width:32px; height:32px;"></i></div>`;
+            }
+            return `
+                <div class="character-card ${img.isBinned ? 'is-binned' : ''}">
+                    <div class="img-wrapper">
+                        <img src="${img.url}" alt="${img.name}">
+                        <div class="binned-overlay"><span>Excluded</span></div>
+                    </div>
+                    <div class="character-info">
+                        <h3>${img.name}</h3>
+                        <p>${img.desc}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-star" onclick="toggleFavorite(${img.id})" title="Move to Favourites">
+                            <i data-lucide="star"></i>
+                        </button>
+                        <button class="btn btn-bin" onclick="toggleBin(${img.id})" title="${img.isBinned ? 'Restore' : 'Exclude'}">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-        window.toggleBin = (id) => {
-            state[id].isBinned = !state[id].isBinned;
-            render();
-        };
+        // Refresh icons
+        lucide.createIcons();
+    }
 
+    window.toggleFavorite = (id) => {
+        state = state.map(img => img.id === id ? { ...img, isFavorite: !img.isFavorite, isBinned: false } : img);
         render();
-    </script>
+    };
+
+    window.toggleBin = (id) => {
+        state = state.map(img => img.id === id ? { ...img, isBinned: !img.isBinned } : img);
+        render();
+    };
+
+    // Initial render
+    render();
+</script>
+
 </body>
 </html>
